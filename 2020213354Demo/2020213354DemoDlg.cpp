@@ -268,6 +268,7 @@ void CMy2020213354DemoDlg::ShowData()
 void CMy2020213354DemoDlg::ShowData_sc()
 {
 	m_list.DeleteAllItems();//清空原有数据 
+
 	CRecordset my_set(&my_db);//申明CRecordset类的对象，用于调取表格数据 
 	if (my_set.Open(AFX_DB_USE_DEFAULT_TYPE, _T("select * from sc")))//获取数据
 	{
@@ -451,14 +452,19 @@ void CMy2020213354DemoDlg::OnBnClickedButtonDelete()
 			return;
 		}//防止未选择就删除
 
-		CString mstrsql;
-		mstrsql.Format(_T("delete from student where sno='%s'"), Array_Attribute);
+		CString mstrsql1;
+		CString mstrsql2;
+		mstrsql1.Format(_T("delete from student where sno='%s'"), Array_Attribute);
+		mstrsql2.Format(_T("delete from sc where sno='%s'"), Array_Attribute);
 		//AfxMessageBox(mstrsql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
 		//SQL代码是否符合语法
 
+		//为避开主码约束，先删除sc表数据，再删除student表数据
+		//因为student表与sc表的数据须一起删除，故可以通过调整删除顺序，而不必解除约束
 		try
 		{
-			my_db.ExecuteSQL(mstrsql);
+			my_db.ExecuteSQL(mstrsql2);
+			my_db.ExecuteSQL(mstrsql1);
 		}
 		catch (CDBException* pe)
 		{
@@ -568,6 +574,8 @@ void CMy2020213354DemoDlg::OnBnClickedButtonSelect()
 	//数组存储选择框的选择状态
 	int Array_Check[5] = { m_btn_check1.GetCheck(),m_btn_check2.GetCheck(),
 	m_btn_check3.GetCheck(),m_btn_check4.GetCheck(),m_btn_check5.GetCheck() };
+	//CRecordset my_set(&my_db);//申明CRecordset类的对象，用于调取表格数据 
+	//CString mysql;
 
 	for (int i = 0; i <= 4; i++)
 	{
@@ -576,10 +584,13 @@ void CMy2020213354DemoDlg::OnBnClickedButtonSelect()
 		{
 			CRecordset my_set(&my_db);//申明CRecordset类的对象，用于调取表格数据 
 			CString mysql;
-			mysql.Format(_T("select * from sc where sno = '%s' and cno = '% ld';"), Array_Attribute, i + 1);
-			my_set.Open(CRecordset::snapshot, mysql);//查询数据库中该同学是否有该门课的选课记录
+			mysql.Format(_T("select * from sc where sno = '%s' and cno = '%ld';"), Array_Attribute, i + 1);
+			my_set.Open(AFX_DB_USE_DEFAULT_TYPE, mysql);//查询数据库中该同学是否有该门课的选课记录
+
+			//AfxMessageBox(mysql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
+			    //SQL代码是否符合语法
 			
-			if (my_set.IsEOF())//若无，给他选课；若有，则跳过该门课的选择
+			if (my_set.IsBOF())//若无，给他选课；若有，则跳过该门课的选择
 			{
 				CString mysql_select;
 				mysql_select.Format(_T("insert into sc values('%s','%ld',-1)"), Array_Attribute, i + 1);
@@ -596,18 +607,41 @@ void CMy2020213354DemoDlg::OnBnClickedButtonSelect()
 					//如果有异常发生，弹出错误消息框，帮助纠正bug
 					pe->ReportError();
 					pe->Delete();
+					return;
 				}
-				ShowData_sc();//加载数据
+				OnBnClickedButtonCourse();//加载数据
+				
 			}
+			my_set.Close();
 		}
 	}
+	AfxMessageBox(_T("选课成功！"));
 }
 
 
 void CMy2020213354DemoDlg::OnBnClickedButtonReset()
 {
 	// TODO: 在此添加控件通知处理程序代码
+	//选择一名同学
+	if (Array_Attribute != _T(""))
+	{
+		CString mysql;
+		mysql.Format(_T("delete from sc where sno='%s' and grade=-1"), Array_Attribute);
 
+		try
+		{
+			my_db.ExecuteSQL(mysql);
+		}
+		catch (CDBException* pe)
+		{
+			//如果有异常发生，弹出错误消息框，帮助纠正bug
+			pe->ReportError();
+			pe->Delete();
+			return;
+		}
+		OnBnClickedButtonCourse();//加载数据
+	}
+	AfxMessageBox(_T("重置成功！"));
 }
 
 
