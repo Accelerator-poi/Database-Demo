@@ -1,12 +1,12 @@
 ﻿// CLoginDlg.cpp: 实现文件
 //
 
-#include<vector>
+
 #include "pch.h"
 #include "2020213354Demo.h"
 #include "afxdialogex.h"
 #include "CLoginDlg.h"
-
+#include<vector>
 CDatabase my_db;
 
 // CLoginDlg 对话框
@@ -60,7 +60,7 @@ void CLoginDlg::OnBnClickedOk()
 		std::vector<CString>::iterator it_name;
 		std::vector<CString>::iterator it_password;
 
-		int i = 0;
+		//int i = 0;
 		while (!my_set.IsEOF())//将information表里的所有数据储存到容器里
 		{
 			my_set.GetFieldValue((short)0, temp_name);//取第1个属性
@@ -69,15 +69,47 @@ void CLoginDlg::OnBnClickedOk()
 			password.push_back(temp_password);
 
 			my_set.MoveNext();//数据指针下移一行
-			i++;
+			//my_set.Close();
+			//i++;
 		}
+		my_set.Close();
 
+		for (it_name = name.begin(); it_name != name.end(); it_name++)
+		{
+			for (it_password = password.begin(); it_password != password.end(); it_password++)
+			{
+				CRecordset My_set_name(&my_db), My_set_password(&my_db);
+				CString mysql_name, mysql_password;
+				CString Cname=_T("NULL"), Cpassword = _T("NULL");
+				mysql_name.Format(_T("SELECT gs_decrypt_aes128('%s','Asdf1234') "), *it_name);
+				mysql_password.Format(_T("SELECT gs_decrypt_aes128('%s','Asdf1234')"), *it_password);
+				//AfxMessageBox(mysql_name);
+				//AfxMessageBox(mysql_password);//运行不成功时可以利用这两条语句检查
+				My_set_name.Open(AFX_DB_USE_DEFAULT_TYPE, mysql_name);
+				My_set_name.GetFieldValue((short)0, Cname);//将vector容器中所有加密后的账号密码解密
+				//AfxMessageBox(Cname);
+				My_set_name.Close();//释放资源
+				My_set_password.Open(AFX_DB_USE_DEFAULT_TYPE, mysql_password);
+				My_set_password.GetFieldValue((short)0, Cpassword);
+				//AfxMessageBox(Cpassword);
+				My_set_password.Close();
 
+				if (user_account == Cname && user_password == Cpassword)
+					IsFind = 1;//当账号与密码均在容器中能找到时，证明注册过
+
+			}
+		}
+		if (IsFind == 0)
+		{
+			AfxMessageBox(_T("请检查账号与密码！"));
+			return;//若未注册，则结束函数，重新输入账号密码
+		}
 	}
 
 	else
 	{
 		AfxMessageBox(_T("请输入账号与密码！"));
+		return;
 	}
 	CDialogEx::OnOK();
 }

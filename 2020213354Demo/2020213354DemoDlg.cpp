@@ -532,24 +532,29 @@ void CMy2020213354DemoDlg::OnBnClickedButtonModify()
 				strsdept = _T("'") + strsdept + _T("'");
 
 		
-			CString mstrsql;
+			CString mstrsql1,mstrsql2, mstrsql3, mstrsql4, mstrsql5, mstrsql6;
 
 			//对关系约束先进行关闭，防止修改时产生错误
 			//修改完成后重新打开约束，防止日后发生错误
-			mstrsql.Format(_T("ALTER TABLE sc DISABLE TRIGGER ALL;"));
-			mstrsql.Format(_T("update sc set sno='%s' where sno='%s';"), strsno, Array_Attribute);
-			mstrsql.Format(_T("ALTER TABLE sc ENABLE TRIGGER ALL;"));
-			mstrsql.Format(_T("ALTER TABLE student DISABLE TRIGGER ALL;"));
-			mstrsql.Format(_T("update student set sno='%s',sname=%s,ssex=%s,sage=%s,sdept=%s where sno='%s';"), strsno, strsname, strssex,
+			mstrsql1.Format(_T("ALTER TABLE sc DISABLE TRIGGER ALL;"));
+			mstrsql2.Format(_T("update sc set sno='%s' where sno='%s';"), strsno, Array_Attribute);
+			mstrsql3.Format(_T("ALTER TABLE sc ENABLE TRIGGER ALL;"));
+			mstrsql4.Format(_T("ALTER TABLE student DISABLE TRIGGER ALL;"));
+			mstrsql5.Format(_T("update student set sno='%s',sname=%s,ssex=%s,sage=%s,sdept=%s where sno='%s';"), strsno, strsname, strssex,
 				strsage, strsdept, Array_Attribute);
 			//mstrsql.Format(_T("ALTER TABLE sc ENABLE TGIGGER ALL"));
-			mstrsql.Format(_T("ALTER TABLE student ENABLE TRIGGER ALL;"));
+			mstrsql6.Format(_T("ALTER TABLE student ENABLE TRIGGER ALL;"));
 			//AfxMessageBox(mstrsql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
 			//SQL代码是否符合语法
 
 			try
 			{
-				my_db.ExecuteSQL(mstrsql);
+				my_db.ExecuteSQL(mstrsql1);
+				my_db.ExecuteSQL(mstrsql2);
+				my_db.ExecuteSQL(mstrsql3);
+				my_db.ExecuteSQL(mstrsql4);
+				my_db.ExecuteSQL(mstrsql5);
+				my_db.ExecuteSQL(mstrsql6);
 			}
 			catch (CDBException* pe)
 			{
