@@ -136,6 +136,44 @@ void CLoginDlg::OnBnClickedEditRegister()
 
 	if (user_account != _T("") && user_password != _T(""))//确保用户输入了账号与密码
 	{
+		CString temp_name = _T("NULL"), Cname = _T("NULL");//用以完成容器的填充与解密
+		std::vector<CString>name;
+		std::vector<CString>::iterator it_name;
+		CRecordset my_set(&my_db);
+		my_set.Open(AFX_DB_USE_DEFAULT_TYPE, _T("select * from userinformation")); //用以调取表格数据
+
+		while (!my_set.IsEOF())
+		{
+			my_set.GetFieldValue((short)0, temp_name);
+			name.push_back(temp_name);//将数据一个一个填入数组
+
+			my_set.MoveNext();//数据移动到下一条
+		}
+		my_set.Close();//释放资源
+
+		for (it_name = name.begin(); it_name != name.end(); it_name++)//遍历已注册的账号，检查将注册的账号是否已注册
+		{
+			CString mysql_temp;
+			CRecordset my_set_temp(&my_db);
+			mysql_temp.Format(_T("SELECT gs_decrypt_aes128('%s','Asdf1234') "), *it_name);//将数据库中的账号依次解密并导出
+			my_set_temp.Open(AFX_DB_USE_DEFAULT_TYPE, mysql_temp);
+			my_set_temp.GetFieldValue((short)0, Cname);
+
+			if (user_account == Cname)
+			{
+				AfxMessageBox(_T("该账号已注册，请勿重复注册！"));
+				//清除输入框
+				m_edtUser.SetSel(0, -1);
+				m_edtUser.Clear();
+				m_edtPassword.SetSel(0, -1);
+				m_edtPassword.Clear();
+
+				return;
+
+			}
+			my_set_temp.Close();
+		}
+
 		CString mysql;
 		mysql.Format(_T("INSERT INTO userinformation VALUES(gs_encrypt_aes128('%s','Asdf1234'),gs_encrypt_aes128('%s','Asdf1234'));"), user_account, user_password);
 
