@@ -74,8 +74,10 @@ void CLoginDlg::OnBnClickedOk()
 		}
 		my_set.Close();
 
+		int i = 0, j = 0;//用于记录各数据在容器中的位置,便于确定密码与账户是否一一对应
 		for (it_name = name.begin(); it_name != name.end(); it_name++)
 		{
+			i = 0;
 			for (it_password = password.begin(); it_password != password.end(); it_password++)
 			{
 				CRecordset My_set_name(&my_db), My_set_password(&my_db);
@@ -94,10 +96,12 @@ void CLoginDlg::OnBnClickedOk()
 				//AfxMessageBox(Cpassword);
 				My_set_password.Close();
 
-				if (user_account == Cname && user_password == Cpassword)
-					IsFind = 1;//当账号与密码均在容器中能找到时，证明注册过
+				if (user_account == Cname && user_password == Cpassword&&i==j)
+					IsFind = 1;//当账号与密码均在容器中能找到且在容器中的位置相同，证明注册过
+				i++;
 
 			}
+			j++;
 		}
 		if (IsFind == 0)
 		{

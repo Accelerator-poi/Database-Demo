@@ -725,7 +725,7 @@ void CMy2020213354DemoDlg::OnBnClickedButtonSearch()
 	{
 
 		mysql.Format(_T("select * from student where sno='%s' or sname='%s' "), my_search, my_search);
-		 AfxMessageBox(mysql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
+		// AfxMessageBox(mysql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
 				//SQL代码是否符合语法
 		my_set.Open(AFX_DB_USE_DEFAULT_TYPE, mysql);//先查询该学号或姓名的所有信息
 		m_list.DeleteAllItems();//清空原有数据 
@@ -750,6 +750,12 @@ void CMy2020213354DemoDlg::OnBnClickedButtonSearch()
 		CString str_sage = _T("");
 		CString str_sdept = _T("");
 
+		if (my_set.IsEOF())//若查询不到有关信息，报出错误
+		{
+			AfxMessageBox(_T("查无此人！"));
+			return;
+		}
+
 		while (!my_set.IsEOF()) {//判断当前是否有数据可供读取
 
 			my_set.GetFieldValue((short)0, str_sno);//取第1个属性
@@ -758,7 +764,6 @@ void CMy2020213354DemoDlg::OnBnClickedButtonSearch()
 			m_list.SetItemText(i, 1, str_sname);
 			my_set.GetFieldValue((short)2, str_ssex);//取第3个属性
 			m_list.SetItemText(i, 2, str_ssex);
-
 			my_set.GetFieldValue((short)3, str_sage);//取第4个属性
 			m_list.SetItemText(i, 3, str_sage);
 			my_set.GetFieldValue((short)4, str_sdept);//取第5个属性
@@ -774,7 +779,7 @@ void CMy2020213354DemoDlg::OnBnClickedButtonSearch()
 	{
 		
 		mysql.Format(_T("select sc.sno,cno,grade from sc,student where sc.sno=student.sno and sc.sno='%s' or sname='%s' and sc.sno=student.sno;"), my_search, my_search);
-		 AfxMessageBox(mysql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
+		 //AfxMessageBox(mysql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
 				//SQL代码是否符合语法
 		my_set.Open(AFX_DB_USE_DEFAULT_TYPE, mysql);//先查询该学号或姓名的所有信息
 		m_list.DeleteAllItems();//清空原有数据 
@@ -794,6 +799,13 @@ void CMy2020213354DemoDlg::OnBnClickedButtonSearch()
 		CString str_sno = _T("");
 		CString str_cno = _T("");
 		CString str_grade = _T("");
+
+		if (my_set.IsEOF())//若查询不到有关信息，报出错误
+		{
+			AfxMessageBox(_T("查无此人！"));
+			return;
+		}
+
 		while (!my_set.IsEOF())
 		{//判断当前是否有数据可供读取
 
