@@ -75,6 +75,7 @@ void CMy2020213354DemoDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_C3, m_btn_check3);
 	DDX_Control(pDX, IDC_CHECK_C4, m_btn_check4);
 	DDX_Control(pDX, IDC_CHECK_C5, m_btn_check5);
+	DDX_Control(pDX, IDC_EDIT_SEARCH, m_edtsearch);
 }
 
 BEGIN_MESSAGE_MAP(CMy2020213354DemoDlg, CDialogEx)
@@ -82,7 +83,7 @@ BEGIN_MESSAGE_MAP(CMy2020213354DemoDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDCANCEL, &CMy2020213354DemoDlg::OnBnClickedCancel)
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_SHOW, &CMy2020213354DemoDlg::OnLvnItemchangedListShow)
+//	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LIST_SHOW, &CMy2020213354DemoDlg::OnLvnItemchangedListShow)
 	ON_STN_CLICKED(IDC_EDIT_SNO, &CMy2020213354DemoDlg::OnStnClickedEditSno)
 	ON_EN_CHANGE(IDC_EDIT4, &CMy2020213354DemoDlg::OnEnChangeEdit4)
 	ON_NOTIFY(NM_CLICK, IDC_LIST_SHOW, &CMy2020213354DemoDlg::OnNMClickListShow)
@@ -95,6 +96,7 @@ BEGIN_MESSAGE_MAP(CMy2020213354DemoDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON3, &CMy2020213354DemoDlg::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON_STUDENT, &CMy2020213354DemoDlg::OnBnClickedButtonStudent)
 	ON_BN_CLICKED(IDC_BUTTON_COURSE, &CMy2020213354DemoDlg::OnBnClickedButtonCourse)
+	ON_BN_CLICKED(IDC_BUTTON_SEARCH, &CMy2020213354DemoDlg::OnBnClickedButtonSearch)
 END_MESSAGE_MAP()
 
 
@@ -130,6 +132,8 @@ BOOL CMy2020213354DemoDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+
+	
 
 
 	//list 控件初始化
@@ -311,12 +315,12 @@ void CMy2020213354DemoDlg::ShowData_sc()
 	my_set.Close();
 }
 
-void CMy2020213354DemoDlg::OnLvnItemchangedListShow(NMHDR* pNMHDR, LRESULT* pResult)
-{
-	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
-	// TODO: 在此添加控件通知处理程序代码
-	*pResult = 0;
-}
+//void CMy2020213354DemoDlg::OnLvnItemchangedListShow(NMHDR* pNMHDR, LRESULT* pResult)
+//{
+//	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+//	// TODO: 在此添加控件通知处理程序代码
+//	*pResult = 0;
+//}
 
 
 void CMy2020213354DemoDlg::OnStnClickedEditSno()
@@ -701,4 +705,115 @@ void CMy2020213354DemoDlg::OnBnClickedButtonCourse()
 
 	//将表格状态设置为sc表
 	ListState = 1;
+}
+
+
+void CMy2020213354DemoDlg::OnBnClickedButtonSearch()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CString my_search, mysql;
+	m_edtsearch.GetWindowText(my_search);//获取输入框里的内容
+	CRecordset my_set(&my_db);
+
+	if (my_search == _T(""))//若用户未输入任何搜索内容
+	{
+		AfxMessageBox(_T("请输入要搜索的姓名或学号！"));
+			return;
+	}
+
+	if (ListState == 0)//当表格为student表时
+	{
+
+		mysql.Format(_T("select * from student where sno='%s' or sname='%s' "), my_search, my_search);
+		 AfxMessageBox(mysql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
+				//SQL代码是否符合语法
+		my_set.Open(AFX_DB_USE_DEFAULT_TYPE, mysql);//先查询该学号或姓名的所有信息
+		m_list.DeleteAllItems();//清空原有数据 
+
+		//在删除了第i列以后，后面的列自动向前补
+	    //因此要重复删除第0列
+		for (int i = 0; i < 5; i++)
+			m_list.DeleteColumn(0);
+
+        //list 控件初始化
+		m_list.InsertColumn(0, _T("学号"), LVCFMT_LEFT, 100);
+		m_list.InsertColumn(1, _T("姓名"), LVCFMT_LEFT, 120);
+		m_list.InsertColumn(2, _T("性别"), LVCFMT_LEFT, 100);
+		m_list.InsertColumn(3, _T("年龄"), LVCFMT_LEFT, 100);
+		m_list.InsertColumn(4, _T("所在系"), LVCFMT_LEFT, 100);
+		m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+		int i = 0;//表示记录的行号，注意从第0行开始往list控件插入数据
+	//5个字符串变量，用于保存一条记录的各个属性
+		CString str_sno = _T("");
+		CString str_sname = _T("");
+		CString str_ssex = _T("");
+		CString str_sage = _T("");
+		CString str_sdept = _T("");
+
+		while (!my_set.IsEOF()) {//判断当前是否有数据可供读取
+
+			my_set.GetFieldValue((short)0, str_sno);//取第1个属性
+			m_list.InsertItem(i, str_sno);
+			my_set.GetFieldValue((short)1, str_sname);//取第2个属性
+			m_list.SetItemText(i, 1, str_sname);
+			my_set.GetFieldValue((short)2, str_ssex);//取第3个属性
+			m_list.SetItemText(i, 2, str_ssex);
+
+			my_set.GetFieldValue((short)3, str_sage);//取第4个属性
+			m_list.SetItemText(i, 3, str_sage);
+			my_set.GetFieldValue((short)4, str_sdept);//取第5个属性
+			m_list.SetItemText(i, 4, str_sdept);
+			my_set.MoveNext();//数据指针下移一行
+			i++;
+		}
+		//释放当前资源
+		my_set.Close();
+	}
+
+	else if (ListState == 1)//当表格为sc表时
+	{
+		
+		mysql.Format(_T("select sc.sno,cno,grade from sc,student where sc.sno=student.sno and sc.sno='%s' or sname='%s' and sc.sno=student.sno;"), my_search, my_search);
+		 AfxMessageBox(mysql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
+				//SQL代码是否符合语法
+		my_set.Open(AFX_DB_USE_DEFAULT_TYPE, mysql);//先查询该学号或姓名的所有信息
+		m_list.DeleteAllItems();//清空原有数据 
+
+		//在删除了第i列以后，后面的列自动向前补
+		//因此要重复删除第0列
+		for (int i = 0; i < 5; i++)
+			m_list.DeleteColumn(0);
+
+        //list 控件初始化
+		m_list.InsertColumn(0, _T("学号"), LVCFMT_LEFT, 100);
+		m_list.InsertColumn(1, _T("课程号"), LVCFMT_LEFT, 120);
+		m_list.InsertColumn(2, _T("成绩"), LVCFMT_LEFT, 100);
+		m_list.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
+		int i = 0;//表示记录的行号，注意从第0行开始往list控件插入数据
+	    //3个字符串变量，用于保存一条记录的各个属性
+		CString str_sno = _T("");
+		CString str_cno = _T("");
+		CString str_grade = _T("");
+		while (!my_set.IsEOF())
+		{//判断当前是否有数据可供读取
+
+			my_set.GetFieldValue((short)0, str_sno);//取第1个属性
+			m_list.InsertItem(i, str_sno);
+			my_set.GetFieldValue((short)1, str_cno);//取第2个属性
+			m_list.SetItemText(i, 1, str_cno);
+			my_set.GetFieldValue((short)2, str_grade);//取第3个属性
+			if (str_grade == _T(""))
+				m_list.SetItemText(i, 2, _T("无成绩"));
+			else if (str_grade == _T("-1"))
+				m_list.SetItemText(i, 2, _T("新选课"));
+			else
+				m_list.SetItemText(i, 2, str_grade);
+
+			my_set.MoveNext();//数据指针下移一行
+			i++;
+		}
+		//释放当前资源
+		my_set.Close();
+
+	}
 }

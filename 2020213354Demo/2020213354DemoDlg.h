@@ -40,7 +40,7 @@ public:
 //	virtual HRESULT accDoDefaultAction(VARIANT varChild);
 	void ShowData();
 	void ShowData_sc();
-	afx_msg void OnLvnItemchangedListShow(NMHDR* pNMHDR, LRESULT* pResult);
+//	afx_msg void OnLvnItemchangedListShow(NMHDR* pNMHDR, LRESULT* pResult);
 	CStatic m_edtsno;
 	afx_msg void OnStnClickedEditSno();
 	afx_msg void OnEnChangeEdit4();
@@ -63,4 +63,6 @@ public:
 	CButton m_btn_check3;
 	CButton m_btn_check4;
 	CButton m_btn_check5;
+	afx_msg void OnBnClickedButtonSearch();
+	CEdit m_edtsearch;
 };
