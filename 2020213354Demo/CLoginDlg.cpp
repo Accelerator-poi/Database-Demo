@@ -6,7 +6,7 @@
 #include "2020213354Demo.h"
 #include "afxdialogex.h"
 #include "CLoginDlg.h"
-#include<vector>
+#include <vector>
 CDatabase my_db;
 
 // CLoginDlg 对话框
@@ -105,7 +105,7 @@ void CLoginDlg::OnBnClickedOk()
 		}
 		if (IsFind == 0)
 		{
-			AfxMessageBox(_T("请检查账号与密码！"));
+			AfxMessageBox(_T("登录失败！请检查账号与密码！"));
 			return;//若未注册，则结束函数，重新输入账号密码
 		}
 	}
@@ -159,9 +159,8 @@ void CLoginDlg::OnBnClickedEditRegister()
 
 		AfxMessageBox(_T("注册成功！"));
 
-		//清除输入框
-		m_edtUser.SetSel(0, -1);
-		m_edtUser.Clear();
+		//仅清除密码框，保留账号框
+		
 		m_edtPassword.SetSel(0, -1);
 		m_edtPassword.Clear();
 	}

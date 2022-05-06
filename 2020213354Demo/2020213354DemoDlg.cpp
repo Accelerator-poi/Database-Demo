@@ -752,7 +752,7 @@ void CMy2020213354DemoDlg::OnBnClickedButtonSearch()
 
 		if (my_set.IsEOF())//若查询不到有关信息，报出错误
 		{
-			AfxMessageBox(_T("查无此人！"));
+			AfxMessageBox(_T("查无此人！请输入要查询人员的全名或学号！"));
 			return;
 		}
 
@@ -802,7 +802,7 @@ void CMy2020213354DemoDlg::OnBnClickedButtonSearch()
 
 		if (my_set.IsEOF())//若查询不到有关信息，报出错误
 		{
-			AfxMessageBox(_T("查无此人！"));
+			AfxMessageBox(_T("查无此人！请输入要查询人员的全名或学号！"));
 			return;
 		}
 
