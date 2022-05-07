@@ -7,6 +7,7 @@
 #include "2020213354Demo.h"
 #include "2020213354DemoDlg.h"
 #include "CLoginDlg.h"
+#include "CLogonDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

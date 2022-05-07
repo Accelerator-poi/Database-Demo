@@ -6,6 +6,7 @@
 #include "2020213354Demo.h"
 #include "afxdialogex.h"
 #include "CLoginDlg.h"
+#include "CLogonDlg.h"
 #include <vector>
 CDatabase my_db;
 
@@ -28,6 +29,7 @@ void CLoginDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_EDIT_USER, m_edtUser);
 	DDX_Control(pDX, IDC_EDIT_PASSWORD, m_edtPassword);
+	//DDX_Control(pDX, IDC_COMBOBOXEX_USER, m_edtuser);
 }
 
 
@@ -35,6 +37,8 @@ BEGIN_MESSAGE_MAP(CLoginDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CLoginDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDCANCEL, &CLoginDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_EDIT_REGISTER, &CLoginDlg::OnBnClickedEditRegister)
+	//ON_CBN_SELCHANGE(IDC_COMBOBOXEX_USER, &CLoginDlg::OnCbnSelchangeComboboxexUser)
+//	ON_EN_CHANGE(IDC_EDIT_USER, &CLoginDlg::OnEnChangeEditUser)
 END_MESSAGE_MAP()
 
 
@@ -134,41 +138,44 @@ void CLoginDlg::OnBnClickedCancel()
 void CLoginDlg::OnBnClickedEditRegister()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	CString user_account, user_password;//用以保存用户输入的值
-	m_edtUser.GetWindowText(user_account);
-	m_edtPassword.GetWindowText(user_password);
+	//CString user_account, user_password;//用以保存用户输入的值
+	//m_edtUser.GetWindowText(user_account);
+	//m_edtPassword.GetWindowText(user_password);
 
-	if (user_account != _T("") && user_password != _T(""))//确保用户输入了账号与密码
-	{
-		CString mysql;
-		mysql.Format(_T("INSERT INTO userinformation VALUES(gs_encrypt_aes128('%s','Asdf1234'),gs_encrypt_aes128('%s','Asdf1234'));"), user_account, user_password);
+	//if (user_account != _T("") && user_password != _T(""))//确保用户输入了账号与密码
+	//{
+	//	CString mysql;
+	//	mysql.Format(_T("INSERT INTO userinformation VALUES(gs_encrypt_aes128('%s','Asdf1234'),gs_encrypt_aes128('%s','Asdf1234'));"), user_account, user_password);
 
-		//AfxMessageBox(mysql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
-				//SQL代码是否符合语法
+	//	//AfxMessageBox(mysql);//测试生成的sql语言，如果添加数据失败，可打开这个语句查看
+	//			//SQL代码是否符合语法
 
-		try
-		{
-			my_db.ExecuteSQL(mysql);
-		}
-		catch (CDBException* pe)
-		{
-			//如果有异常发生，弹出错误消息框，帮助纠正bug
-			pe->ReportError();
-			pe->Delete();
-		}
+	//	try
+	//	{
+	//		my_db.ExecuteSQL(mysql);
+	//	}
+	//	catch (CDBException* pe)
+	//	{
+	//		//如果有异常发生，弹出错误消息框，帮助纠正bug
+	//		pe->ReportError();
+	//		pe->Delete();
+	//	}
 
-		AfxMessageBox(_T("注册成功！"));
+	//	AfxMessageBox(_T("注册成功！"));
 
-		//仅清除密码框，保留账号框
-		
-		m_edtPassword.SetSel(0, -1);
-		m_edtPassword.Clear();
-	}
+	//	//仅清除密码框，保留账号框
+	//	
+	//	m_edtPassword.SetSel(0, -1);
+	//	m_edtPassword.Clear();
+	//}
 
-	else
-	{
-		AfxMessageBox(_T("请输入账号与密码！"));
-	}
+	//else
+	//{
+	//	AfxMessageBox(_T("请输入账号与密码！"));
+	//}
+
+	CLogonDlg clogondlg;
+	clogondlg.DoModal();
 }
 
 
@@ -191,3 +198,6 @@ BOOL CLoginDlg::OnInitDialog()
 	return TRUE;  // return TRUE unless you set the focus to a control
 				  // 异常: OCX 属性页应返回 FALSE
 }
+
+
+

@@ -36,6 +36,9 @@
     <ClInclude Include="CLoginDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="CLogonDlg.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2020213354Demo.cpp">
@@ -48,6 +51,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CLoginDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CLogonDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
