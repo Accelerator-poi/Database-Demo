@@ -31,4 +31,5 @@ public:
 //	CComboBoxEx m_edtuser;
 	afx_msg void OnCbnSelchangeComboboxexUser();
 //	afx_msg void OnEnChangeEditUser();
+	afx_msg void OnBnClickedButtonReset();
 };
